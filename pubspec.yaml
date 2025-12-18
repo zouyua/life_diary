@@ -1,0 +1,55 @@
+name: frame
+description: "企业级 Flutter 项目框架"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.0-217.0.dev
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI
+  cupertino_icons: ^1.0.8
+  flutter_screenutil: ^5.9.3
+  
+  # 状态管理
+  get: ^4.6.6
+  
+  # 网络请求
+  dio: ^5.7.0
+  
+  # 路由
+  go_router: ^14.6.2
+  
+  # 本地存储
+  shared_preferences: ^2.3.3
+  
+  # JSON 序列化
+  json_annotation: ^4.9.0
+  
+  # 日志
+  logger: ^2.5.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  
+  # JSON 序列化代码生成
+  build_runner: ^2.4.13
+  json_serializable: ^6.8.0
+  
+  # 属性测试
+  glados: ^1.1.1
+  
+  # Mock
+  mockito: ^5.4.4
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
