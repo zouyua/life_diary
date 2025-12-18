@@ -21,7 +21,7 @@ dependencies:
   dio: ^5.7.0
   
   # 路由
-  go_router: ^14.6.2
+  go_router: ^17.0.1
   
   # 本地存储
   shared_preferences: ^2.3.3
@@ -31,6 +31,15 @@ dependencies:
   
   # 日志
   logger: ^2.5.0
+  
+  # 瀑布流布局
+  flutter_staggered_grid_view: ^0.7.0
+  
+  # 图片选择
+  image_picker: ^1.0.7
+  
+  # 缓存图片
+  cached_network_image: ^3.3.1
 
 dev_dependencies:
   flutter_test:

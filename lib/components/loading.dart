@@ -22,7 +22,8 @@ class Loading {
 
   /// 隐藏加载
   static void hide() {
-    _overlayEntry?.remove();
+    if (_overlayEntry == null) return;
+    _overlayEntry!.remove();
     _overlayEntry = null;
   }
 }

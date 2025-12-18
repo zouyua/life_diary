@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
           alignment: Alignment.centerRight,
           child: TextButton(
             onPressed: () {
-              // TODO: 忘记密码
+              // TODO: 忘记密码 
             },
             child: const Text('忘记密码？'),
           ),
@@ -168,9 +168,11 @@ class _LoginPageState extends State<LoginPage> {
 
       await AppStore.to.login('mock_token_123', user);
 
+      if (!mounted) return;
       Loading.hide();
       AppRouter.goHome();
     } catch (e) {
+      if (!mounted) return;
       Loading.hide();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('登录失败: $e')),

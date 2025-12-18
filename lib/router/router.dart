@@ -1,30 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frame/store/app_store.dart';
-import 'package:frame/pages/home/home_page.dart';
+import 'package:frame/pages/main/main_page.dart';
 import 'package:frame/pages/login/login_page.dart';
+import 'package:frame/pages/note_detail/note_detail_page.dart';
+import 'package:frame/pages/publish/publish_page.dart';
 
 /// 路由名称
 class Routes {
-  static const String home = '/';
+  static const String main = '/';
   static const String login = '/login';
+  static const String noteDetail = '/note/detail';
+  static const String publish = '/publish';
+  static const String userProfile = '/user/:userId';
 }
 
 /// 应用路由配置
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: Routes.home,
+    initialLocation: Routes.main,
     redirect: _authGuard,
     routes: [
       GoRoute(
-        path: Routes.home,
-        name: 'home',
-        builder: (context, state) => const HomePage(),
+        path: Routes.main,
+        name: 'main',
+        builder: (context, state) => const MainPage(),
       ),
       GoRoute(
         path: Routes.login,
         name: 'login',
         builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: Routes.noteDetail,
+        name: 'noteDetail',
+        builder: (context, state) {
+          final noteId = state.extra as int? ?? 0;
+          return NoteDetailPage(noteId: noteId);
+        },
+      ),
+      GoRoute(
+        path: Routes.publish,
+        name: 'publish',
+        builder: (context, state) => const PublishPage(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
@@ -44,9 +62,9 @@ class AppRouter {
       return Routes.login;
     }
 
-    // 已登录且在登录页，跳转到首页
+    // 已登录且在登录页，跳转到主页
     if (isLoggedIn && isLoginPage) {
-      return Routes.home;
+      return Routes.main;
     }
 
     return null;
@@ -72,9 +90,19 @@ class AppRouter {
     router.replace(path);
   }
 
-  /// 跳转到首页
+  /// 跳转到主页
   static void goHome() {
-    go(Routes.home);
+    go(Routes.main);
+  }
+
+  /// 跳转到笔记详情
+  static void goNoteDetail(int noteId) {
+    router.push(Routes.noteDetail, extra: noteId);
+  }
+
+  /// 跳转到发布页
+  static void goPublish() {
+    push(Routes.publish);
   }
 
   /// 跳转到登录页
