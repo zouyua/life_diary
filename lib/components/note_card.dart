@@ -24,7 +24,7 @@ class NoteCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -52,11 +52,33 @@ class NoteCard extends StatelessWidget {
                   imageUrl: note.cover!,
                   fit: BoxFit.cover,
                   width: double.infinity,
-                  placeholder: (_, __) => _buildPlaceholder(),
-                  errorWidget: (_, __, ___) => _buildPlaceholder(),
+                  placeholder: (_, _) => _buildPlaceholder(),
+                  errorWidget: (_, _, _) => _buildPlaceholder(),
                 )
               : _buildPlaceholder(),
         ),
+        // 置顶标签
+        if (note.isTop == true)
+          Positioned(
+            top: 8,
+            left: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.push_pin, size: 12, color: Colors.white),
+                  SizedBox(width: 2),
+                  Text('置顶', style: TextStyle(fontSize: 10, color: Colors.white)),
+                ],
+              ),
+            ),
+          ),
+        // 视频标签
         if (note.isVideo)
           Positioned(
             top: 8,
@@ -126,8 +148,8 @@ class NoteCard extends StatelessWidget {
                         width: 20,
                         height: 20,
                         fit: BoxFit.cover,
-                        errorWidget: (_, __, ___) => _buildDefaultAvatar(),
-                        placeholder: (_, __) => _buildDefaultAvatar(),
+                        errorWidget: (_, _, _) => _buildDefaultAvatar(),
+                        placeholder: (_, _) => _buildDefaultAvatar(),
                       )
                     : _buildDefaultAvatar(),
               ),

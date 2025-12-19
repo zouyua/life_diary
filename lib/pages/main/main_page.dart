@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frame/pages/home/home_page.dart';
 import 'package:frame/pages/search/search_page.dart';
-import 'package:frame/pages/publish/publish_page.dart';
 import 'package:frame/pages/message/message_page.dart';
 import 'package:frame/pages/profile/profile_page.dart';
 import 'package:frame/theme/theme.dart';
+import 'package:frame/router/router.dart';
 
 /// 主页面（底部导航）
 class MainPage extends StatefulWidget {
@@ -20,7 +20,7 @@ class _MainPageState extends State<MainPage> {
   final List<Widget> _pages = const [
     HomePage(),
     SearchPage(),
-    PublishPage(),
+    SizedBox(), // 占位，发布按钮跳转独立页面
     MessagePage(),
     ProfilePage(),
   ];
@@ -84,11 +84,8 @@ class _MainPageState extends State<MainPage> {
 
   void _onTabTapped(int index) {
     if (index == 2) {
-      // 发布按钮，跳转发布页
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const PublishPage()),
-      );
+      // 发布按钮，使用 go_router 跳转
+      AppRouter.goPublish();
       return;
     }
     setState(() => _currentIndex = index);

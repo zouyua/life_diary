@@ -8,7 +8,13 @@ class Loading {
 
   /// 显示加载
   static void show({String? message}) {
-    if (_overlayEntry != null) return;
+    // 如果已经显示，先隐藏再重新显示（更新消息）
+    if (_overlayEntry != null) {
+      try {
+        _overlayEntry?.remove();
+      } catch (_) {}
+      _overlayEntry = null;
+    }
 
     _overlayEntry = OverlayEntry(
       builder: (context) => _LoadingOverlay(message: message),
@@ -23,7 +29,11 @@ class Loading {
   /// 隐藏加载
   static void hide() {
     if (_overlayEntry == null) return;
-    _overlayEntry!.remove();
+    try {
+      _overlayEntry?.remove();
+    } catch (_) {
+      // 忽略已移除的错误
+    }
     _overlayEntry = null;
   }
 }

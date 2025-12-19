@@ -2,11 +2,12 @@ import 'package:frame/api/http.dart';
 import 'package:frame/api/api.dart';
 
 /// 认证模块 API
+/// Gateway 路由: /auth/** -> xiaohashu-auth
 class AuthApi {
   /// 发送短信验证码
   static Future<ApiResponse> sendVerificationCode(String phone) async {
     final data = await Http.post<Map<String, dynamic>>(
-      '/verification/code/send',
+      '/auth/verification/code/send',
       data: {'phone': phone},
     );
     return ApiResponse.fromJson(data ?? {}, null);
@@ -21,7 +22,7 @@ class AuthApi {
     required int type,
   }) async {
     final data = await Http.post<Map<String, dynamic>>(
-      '/login',
+      '/auth/login',
       data: {
         'phone': phone,
         if (code != null) 'code': code,
@@ -34,25 +35,25 @@ class AuthApi {
       (d) => d as String,
     );
     if (!response.success) {
-      throw ApiException(message: response.message);
+      throw ApiException(message: response.message ?? '登录失败');
     }
     return response.data;
   }
 
   /// 登出
   static Future<void> logout() async {
-    await Http.post('/logout');
+    await Http.post('/auth/logout');
   }
 
   /// 修改密码
   static Future<void> updatePassword(String newPassword) async {
     final data = await Http.post<Map<String, dynamic>>(
-      '/password/update',
+      '/auth/password/update',
       data: {'newPassword': newPassword},
     );
     final response = ApiResponse.fromJson(data ?? {}, null);
     if (!response.success) {
-      throw ApiException(message: response.message);
+      throw ApiException(message: response.message ?? '操作失败');
     }
   }
 }

@@ -10,6 +10,8 @@ class NoteItemModel {
   final String? avatar;
   final String? likeTotal;
   final bool? isLiked;
+  final int? visible; // 可见范围 (0：公开 1：仅自己可见)
+  final bool? isTop; // 是否置顶
 
   NoteItemModel({
     required this.noteId,
@@ -22,6 +24,8 @@ class NoteItemModel {
     this.avatar,
     this.likeTotal,
     this.isLiked,
+    this.visible,
+    this.isTop,
   });
 
   factory NoteItemModel.fromJson(Map<String, dynamic> json) => NoteItemModel(
@@ -35,9 +39,12 @@ class NoteItemModel {
         avatar: json['avatar'] as String?,
         likeTotal: json['likeTotal'] as String?,
         isLiked: json['isLiked'] as bool?,
+        visible: json['visible'] as int?,
+        isTop: json['isTop'] as bool?,
       );
 
   bool get isVideo => type == 1;
+  bool get isPrivate => visible == 1;
 }
 
 /// 笔记详情
@@ -50,11 +57,12 @@ class NoteDetailModel {
   final String? videoUri;
   final int? topicId;
   final String? topicName;
-  final int? creatorId;
+  final String? creatorId; // 使用 String 避免 JS 精度问题
   final String? creatorName;
   final String? avatar;
   final String? updateTime;
   final int? visible;
+  final bool? isTop; // 是否置顶
 
   NoteDetailModel({
     required this.id,
@@ -70,6 +78,7 @@ class NoteDetailModel {
     this.avatar,
     this.updateTime,
     this.visible,
+    this.isTop,
   });
 
   factory NoteDetailModel.fromJson(Map<String, dynamic> json) => NoteDetailModel(
@@ -81,14 +90,16 @@ class NoteDetailModel {
         videoUri: json['videoUri'] as String?,
         topicId: json['topicId'] as int?,
         topicName: json['topicName'] as String?,
-        creatorId: json['creatorId'] as int?,
+        creatorId: json['creatorId']?.toString(), // 转为 String
         creatorName: json['creatorName'] as String?,
         avatar: json['avatar'] as String?,
         updateTime: json['updateTime'] as String?,
         visible: json['visible'] as int?,
+        isTop: json['isTop'] as bool?,
       );
 
   bool get isVideo => type == 1;
+  bool get isPrivate => visible == 1;
 }
 
 /// 笔记点赞收藏状态

@@ -20,7 +20,7 @@ class EnvConfig {
   static String get apiBaseUrl {
     switch (_current) {
       case Env.dev:
-        return 'https://dev-api.example.com';
+        return 'http://localhost:8000';
       case Env.prod:
         return 'https://api.example.com';
     }

@@ -1,17 +1,16 @@
 /// API 响应模型
 class ApiResponse<T> {
-  final int code;
-  final String message;
+  final bool success;
+  final String? message;
+  final String? errorCode;
   final T? data;
 
   ApiResponse({
-    required this.code,
-    required this.message,
+    required this.success,
+    this.message,
+    this.errorCode,
     this.data,
   });
-
-  /// 是否成功
-  bool get success => code == 0;
 
   /// 从 JSON 创建
   factory ApiResponse.fromJson(
@@ -19,8 +18,9 @@ class ApiResponse<T> {
     T Function(dynamic)? fromJson,
   ) {
     return ApiResponse<T>(
-      code: json['code'] as int? ?? -1,
-      message: json['message'] as String? ?? '',
+      success: json['success'] as bool? ?? false,
+      message: json['message'] as String?,
+      errorCode: json['errorCode'] as String?,
       data: json['data'] != null && fromJson != null
           ? fromJson(json['data'])
           : json['data'] as T?,
@@ -30,15 +30,16 @@ class ApiResponse<T> {
   /// 转换为 JSON
   Map<String, dynamic> toJson([Object? Function(T?)? toJsonT]) {
     return {
-      'code': code,
+      'success': success,
       'message': message,
+      'errorCode': errorCode,
       'data': toJsonT != null ? toJsonT(data) : data,
     };
   }
 
   @override
   String toString() {
-    return 'ApiResponse(code: $code, message: $message, data: $data)';
+    return 'ApiResponse(success: $success, message: $message, data: $data)';
   }
 }
 

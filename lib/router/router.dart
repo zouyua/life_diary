@@ -20,6 +20,7 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: Routes.main,
     redirect: _authGuard,
+    refreshListenable: AppStore.authNotifier,
     routes: [
       GoRoute(
         path: Routes.main,

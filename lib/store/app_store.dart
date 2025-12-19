@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:frame/utils/storage.dart';
 
@@ -34,8 +35,15 @@ class User {
   }
 }
 
+/// 认证状态通知器（用于 go_router 监听）
+class AuthNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
+}
+
 /// 全局状态管理
 class AppStore extends GetxController {
+  /// 认证状态通知器
+  static final authNotifier = AuthNotifier();
   /// 获取实例
   static AppStore get to => Get.find<AppStore>();
 
@@ -49,6 +57,14 @@ class AppStore extends GetxController {
 
   /// 是否已登录
   bool get isLoggedIn => _token.value.isNotEmpty;
+
+  /// 笔记列表刷新标记（每次变化时触发刷新）
+  final noteListRefresh = 0.obs;
+  
+  /// 触发笔记列表刷新
+  void refreshNoteList() {
+    noteListRefresh.value++;
+  }
 
   /// 初始化
   Future<void> init() async {
@@ -72,6 +88,7 @@ class AppStore extends GetxController {
   Future<void> setToken(String token) async {
     _token.value = token;
     await Storage.setString(StorageKeys.token, token);
+    authNotifier.notify(); // 通知路由刷新
   }
 
   /// 设置用户信息
@@ -96,6 +113,7 @@ class AppStore extends GetxController {
     _user.value = null;
     await Storage.remove(StorageKeys.token);
     await Storage.remove(StorageKeys.user);
+    authNotifier.notify(); // 通知路由刷新
   }
 
   /// 更新用户信息

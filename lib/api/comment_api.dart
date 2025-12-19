@@ -3,6 +3,7 @@ import 'package:frame/api/api.dart';
 import 'package:frame/models/comment.dart';
 
 /// 评论模块 API
+/// Gateway 路由: /comment/** -> xiaohashu-comment
 class CommentApi {
   /// 发布评论
   static Future<void> publish({
@@ -12,7 +13,7 @@ class CommentApi {
     int? replyCommentId,
   }) async {
     final data = await Http.post<Map<String, dynamic>>(
-      '/comment/publish',
+      '/comment/comment/publish',
       data: {
         'noteId': noteId,
         if (content != null) 'content': content,
@@ -32,7 +33,7 @@ class CommentApi {
     int pageNo = 1,
   }) async {
     final data = await Http.post<Map<String, dynamic>>(
-      '/comment/list',
+      '/comment/comment/list',
       data: {'noteId': noteId, 'pageNo': pageNo},
     );
     return PageResponse.fromJson(
@@ -47,7 +48,7 @@ class CommentApi {
     int pageNo = 1,
   }) async {
     final data = await Http.post<Map<String, dynamic>>(
-      '/comment/child/list',
+      '/comment/comment/child/list',
       data: {'parentCommentId': parentCommentId, 'pageNo': pageNo},
     );
     return PageResponse.fromJson(
@@ -59,7 +60,7 @@ class CommentApi {
   /// 点赞评论
   static Future<void> like(int commentId) async {
     final data = await Http.post<Map<String, dynamic>>(
-      '/comment/like',
+      '/comment/comment/like',
       data: {'commentId': commentId},
     );
     final response = ApiResponse.fromJson(data ?? {}, null);
@@ -71,7 +72,7 @@ class CommentApi {
   /// 取消点赞评论
   static Future<void> unlike(int commentId) async {
     final data = await Http.post<Map<String, dynamic>>(
-      '/comment/unlike',
+      '/comment/comment/unlike',
       data: {'commentId': commentId},
     );
     final response = ApiResponse.fromJson(data ?? {}, null);
@@ -83,7 +84,7 @@ class CommentApi {
   /// 删除评论
   static Future<void> delete(int commentId) async {
     final data = await Http.post<Map<String, dynamic>>(
-      '/comment/delete',
+      '/comment/comment/delete',
       data: {'commentId': commentId},
     );
     final response = ApiResponse.fromJson(data ?? {}, null);

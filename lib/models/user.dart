@@ -40,7 +40,7 @@ class UserModel {
 
 /// 用户主页信息
 class UserProfileModel {
-  final int userId;
+  final String odUserId; // 使用 String 避免 JS 精度问题
   final String? avatar;
   final String? nickname;
   final String? xiaohashuId;
@@ -55,8 +55,11 @@ class UserProfileModel {
   final String? likeTotal;
   final String? collectTotal;
 
+  // 兼容旧代码
+  int get userId => int.tryParse(odUserId) ?? 0;
+
   UserProfileModel({
-    required this.userId,
+    required this.odUserId,
     this.avatar,
     this.nickname,
     this.xiaohashuId,
@@ -74,7 +77,7 @@ class UserProfileModel {
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) =>
       UserProfileModel(
-        userId: json['userId'] as int,
+        odUserId: json['userId']?.toString() ?? '0', // 转为 String 保存
         avatar: json['avatar'] as String?,
         nickname: json['nickname'] as String?,
         xiaohashuId: json['xiaohashuId'] as String?,

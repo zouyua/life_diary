@@ -3,6 +3,7 @@ import 'package:frame/api/api.dart';
 import 'package:frame/models/search.dart';
 
 /// 搜索模块 API
+/// Gateway 路由: /search/** -> xiaohashu-search
 class SearchApi {
   /// 搜索用户
   static Future<PageResponse<SearchUserModel>> searchUser({
@@ -10,7 +11,7 @@ class SearchApi {
     int pageNo = 1,
   }) async {
     final data = await Http.post<Map<String, dynamic>>(
-      '/search/user',
+      '/search/search/user',
       data: {'keyword': keyword, 'pageNo': pageNo},
     );
     return PageResponse.fromJson(
@@ -31,7 +32,7 @@ class SearchApi {
     int? publishTimeRange,
   }) async {
     final data = await Http.post<Map<String, dynamic>>(
-      '/search/note',
+      '/search/search/note',
       data: {
         'keyword': keyword,
         'pageNo': pageNo,

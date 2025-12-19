@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:frame/theme/theme.dart';
 import 'package:frame/components/note_card.dart';
 import 'package:frame/models/note.dart';
 import 'package:frame/router/router.dart';
+import 'package:frame/api/note_api.dart';
 
 /// 首页 - 瀑布流笔记列表
 class HomePage extends StatefulWidget {
@@ -13,38 +13,41 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final List<String> _tabs = ['推荐', '关注', '附近', '视频'];
 
-  // 模拟数据
-  final List<NoteItemModel> _notes = List.generate(
-    20,
-    (i) => NoteItemModel(
-      noteId: i,
-      type: i % 3 == 0 ? 1 : 0,
-      cover: 'https://picsum.photos/200/${250 + (i % 5) * 50}?random=$i',
-      title: i % 2 == 0 
-          ? '这是第 ${i + 1} 篇笔记的标题，可能会很长很长' 
-          : '短标题 ${i + 1}',
-      creatorId: i,
-      nickname: '用户${i + 1}',
-      avatar: 'https://picsum.photos/50/50?random=$i',
-      likeTotal: '${(i + 1) * 100}',
-      isLiked: i % 2 == 0,
-    ),
-  );
+  List<NoteItemModel> _notes = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
+    _loadNotes();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadNotes() async {
+    try {
+      final notes = await NoteApi.getHomeList();
+      if (mounted) {
+        setState(() {
+          _notes = notes;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -71,6 +74,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildWaterfallGrid() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_notes.isEmpty) {
+      return const Center(child: Text('暂无笔记'));
+    }
+
     return RefreshIndicator(
       onRefresh: _onRefresh,
       child: Padding(
@@ -92,7 +103,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Future<void> _onRefresh() async {
-    await Future.delayed(const Duration(seconds: 1));
+    await _loadNotes();
   }
 
   void _onNoteTap(NoteItemModel note) {
