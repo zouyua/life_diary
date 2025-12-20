@@ -192,22 +192,6 @@ class NoteApi {
     return response.data;
   }
 
-  /// 获取首页推荐笔记列表
-  static Future<List<NoteItemModel>> getHomeList({int? cursor}) async {
-    final data = await Http.post<Map<String, dynamic>>(
-      '/note/note/list',
-      data: {
-        if (cursor != null) 'cursor': cursor,
-      },
-    );
-    final response = ApiResponse.fromJson(data ?? {}, null);
-    if (response.success && response.data != null) {
-      final list = response.data as List?;
-      return list?.map((e) => NoteItemModel.fromJson(e)).toList() ?? [];
-    }
-    return [];
-  }
-
   /// 获取频道列表
   static Future<List<ChannelModel>> getChannelList() async {
     final data = await Http.post<Map<String, dynamic>>(
@@ -236,5 +220,20 @@ class NoteApi {
           .toList();
     }
     return [];
+  }
+
+  /// 获取发现页笔记列表（按频道分页）
+  static Future<NotePageResponse> getDiscoverList({
+    required int channelId,
+    int pageNo = 1,
+  }) async {
+    final data = await Http.post<Map<String, dynamic>>(
+      '/note/note/discover/list',
+      data: {
+        'channelId': channelId,
+        'pageNo': pageNo,
+      },
+    );
+    return NotePageResponse.fromJson(data ?? {});
   }
 }

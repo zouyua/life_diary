@@ -169,7 +169,7 @@ class NoteCard extends StatelessWidget {
               ),
               const SizedBox(width: 2),
               Text(
-                note.likeTotal ?? '0',
+                '${note.likeTotal ?? 0}',
                 style: const TextStyle(fontSize: 11, color: Colors.grey),
               ),
             ],

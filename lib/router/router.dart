@@ -5,6 +5,7 @@ import 'package:frame/pages/main/main_page.dart';
 import 'package:frame/pages/login/login_page.dart';
 import 'package:frame/pages/note_detail/note_detail_page.dart';
 import 'package:frame/pages/publish/publish_page.dart';
+import 'package:frame/models/note.dart';
 
 /// 路由名称
 class Routes {
@@ -43,7 +44,10 @@ class AppRouter {
       GoRoute(
         path: Routes.publish,
         name: 'publish',
-        builder: (context, state) => const PublishPage(),
+        builder: (context, state) {
+          final note = state.extra as NoteDetailModel?;
+          return PublishPage(editNote: note);
+        },
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
@@ -104,6 +108,11 @@ class AppRouter {
   /// 跳转到发布页
   static void goPublish() {
     push(Routes.publish);
+  }
+
+  /// 跳转到编辑笔记页
+  static void goEditNote(NoteDetailModel note) {
+    router.push(Routes.publish, extra: note);
   }
 
   /// 跳转到登录页

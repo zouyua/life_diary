@@ -23,7 +23,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   bool _isCollected = false;
   int _likeCount = 0;
   int _collectCount = 0;
-  final int _commentCount = 0;
+  int _commentCount = 0;
 
   @override
   void initState() {
@@ -40,6 +40,9 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         setState(() {
           _note = note;
           _isLoading = false;
+          _likeCount = note.likeTotal ?? 0;
+          _collectCount = note.collectTotal ?? 0;
+          _commentCount = note.commentTotal ?? 0;
           if (status != null) {
             _isLiked = status.isLiked;
             _isCollected = status.isCollected;
@@ -406,10 +409,13 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     if (_isMyNote) {
       actions.add(_ActionItem(icon: Icons.edit_outlined, label: '编辑', onTap: _editNote));
       actions.add(_ActionItem(icon: Icons.delete_outline, label: '删除', onTap: _deleteNote));
-      // 仅我可见只能设置，不能取消（后端没有公开接口）
-      if (!isPrivate) {
-        actions.add(_ActionItem(icon: Icons.visibility_off_outlined, label: '仅我可见', onTap: _setOnlyMe));
-      }
+      // 仅我可见/取消仅我可见
+      actions.add(_ActionItem(
+        icon: isPrivate ? Icons.visibility : Icons.visibility_off_outlined,
+        label: isPrivate ? '取消仅我可见' : '设为私密',
+        onTap: _setOnlyMe,
+      ));
+      // 置顶/取消置顶
       actions.add(_ActionItem(
         icon: isTop ? Icons.push_pin : Icons.push_pin_outlined,
         label: isTop ? '取消置顶' : '置顶',
@@ -493,10 +499,9 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
 
   /// 编辑笔记
   void _editNote() {
-    // TODO: 跳转到编辑页面
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('编辑功能开发中')),
-    );
+    if (_note != null) {
+      AppRouter.goEditNote(_note!);
+    }
   }
 
   /// 删除笔记
@@ -578,8 +583,6 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar({
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('操作失败: $e')),
         );

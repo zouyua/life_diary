@@ -8,7 +8,7 @@ class NoteItemModel {
   final int? creatorId;
   final String? nickname;
   final String? avatar;
-  final String? likeTotal;
+  final int? likeTotal;
   final bool? isLiked;
   final int? visible; // 可见范围 (0：公开 1：仅自己可见)
   final bool? isTop; // 是否置顶
@@ -29,7 +29,8 @@ class NoteItemModel {
   });
 
   factory NoteItemModel.fromJson(Map<String, dynamic> json) => NoteItemModel(
-        noteId: json['noteId'] as int,
+        // 兼容 noteId 和 id 两种字段名
+        noteId: (json['noteId'] ?? json['id']) as int,
         type: json['type'] as int,
         cover: json['cover'] as String?,
         videoUri: json['videoUri'] as String?,
@@ -37,7 +38,10 @@ class NoteItemModel {
         creatorId: json['creatorId'] as int?,
         nickname: json['nickname'] as String?,
         avatar: json['avatar'] as String?,
-        likeTotal: json['likeTotal'] as String?,
+        // 兼容 String 和 int 类型
+        likeTotal: json['likeTotal'] != null
+            ? int.tryParse(json['likeTotal'].toString())
+            : null,
         isLiked: json['isLiked'] as bool?,
         visible: json['visible'] as int?,
         isTop: json['isTop'] as bool?,
@@ -63,6 +67,9 @@ class NoteDetailModel {
   final String? updateTime;
   final int? visible;
   final bool? isTop; // 是否置顶
+  final int? likeTotal; // 点赞数
+  final int? collectTotal; // 收藏数
+  final int? commentTotal; // 评论数
 
   NoteDetailModel({
     required this.id,
@@ -79,6 +86,9 @@ class NoteDetailModel {
     this.updateTime,
     this.visible,
     this.isTop,
+    this.likeTotal,
+    this.collectTotal,
+    this.commentTotal,
   });
 
   factory NoteDetailModel.fromJson(Map<String, dynamic> json) => NoteDetailModel(
@@ -96,6 +106,9 @@ class NoteDetailModel {
         updateTime: json['updateTime'] as String?,
         visible: json['visible'] as int?,
         isTop: json['isTop'] as bool?,
+        likeTotal: json['likeTotal'] as int?,
+        collectTotal: json['collectTotal'] as int?,
+        commentTotal: json['commentTotal'] as int?,
       );
 
   bool get isVideo => type == 1;
@@ -137,4 +150,41 @@ class NoteListResponse {
       );
 
   bool get hasMore => nextCursor != null;
+}
+
+
+/// 笔记分页列表响应
+class NotePageResponse {
+  final List<NoteItemModel> data;
+  final int pageNo;
+  final int totalCount;
+  final int pageSize;
+  final int totalPage;
+
+  NotePageResponse({
+    required this.data,
+    required this.pageNo,
+    required this.totalCount,
+    required this.pageSize,
+    required this.totalPage,
+  });
+
+  factory NotePageResponse.fromJson(Map<String, dynamic> json) {
+    final dataList = json['data'];
+    List<NoteItemModel> notes = [];
+    if (dataList is List) {
+      notes = dataList
+          .map((e) => NoteItemModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    return NotePageResponse(
+      data: notes,
+      pageNo: json['pageNo'] as int? ?? 1,
+      totalCount: json['totalCount'] as int? ?? 0,
+      pageSize: json['pageSize'] as int? ?? 10,
+      totalPage: json['totalPage'] as int? ?? 0,
+    );
+  }
+
+  bool get hasMore => pageNo < totalPage;
 }

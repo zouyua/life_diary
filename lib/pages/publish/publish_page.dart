@@ -7,12 +7,15 @@ import 'package:frame/components/loading.dart';
 import 'package:frame/api/note_api.dart';
 import 'package:frame/api/oss_api.dart';
 import 'package:frame/models/channel.dart';
+import 'package:frame/models/note.dart';
 import 'package:frame/router/router.dart';
 import 'package:frame/store/app_store.dart';
 
-/// 发布笔记页
+/// 发布/编辑笔记页
 class PublishPage extends StatefulWidget {
-  const PublishPage({super.key});
+  final NoteDetailModel? editNote;
+
+  const PublishPage({super.key, this.editNote});
 
   @override
   State<PublishPage> createState() => _PublishPageState();
@@ -23,11 +26,32 @@ class _PublishPageState extends State<PublishPage> {
   final _contentController = TextEditingController();
   final List<XFile> _selectedImages = [];
   final List<Uint8List> _imageBytes = [];
-  
+  final List<String> _existingImageUrls = []; // 已有的图片URL（编辑模式）
+
   // 频道和话题
   ChannelModel? _selectedChannel;
   TopicModel? _selectedTopic;
   bool _isPublishing = false;
+
+  bool get _isEditMode => widget.editNote != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _initEditData();
+  }
+
+  void _initEditData() {
+    if (widget.editNote != null) {
+      final note = widget.editNote!;
+      _titleController.text = note.title ?? '';
+      _contentController.text = note.content ?? '';
+      _existingImageUrls.addAll(note.imgUris ?? []);
+      if (note.topicId != null && note.topicName != null) {
+        _selectedTopic = TopicModel(id: note.topicId!, name: note.topicName!);
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -40,12 +64,12 @@ class _PublishPageState extends State<PublishPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('发布笔记'),
+        title: Text(_isEditMode ? '编辑笔记' : '发布笔记'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: AppButton(
-              text: '发布',
+              text: _isEditMode ? '保存' : '发布',
               size: AppButtonSize.small,
               width: 60,
               loading: _isPublishing,
@@ -73,15 +97,17 @@ class _PublishPageState extends State<PublishPage> {
   }
 
   bool _canPublish() {
-    return _selectedImages.isNotEmpty && !_isPublishing;
+    return (_selectedImages.isNotEmpty || _existingImageUrls.isNotEmpty) &&
+        !_isPublishing;
   }
 
   Widget _buildImagePicker() {
+    final totalImages = _existingImageUrls.length + _selectedImages.length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '添加图片 (${_selectedImages.length}/9)',
+          '添加图片 ($totalImages/9)',
           style: AppTextStyles.body2.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: 8),
@@ -89,12 +115,62 @@ class _PublishPageState extends State<PublishPage> {
           spacing: 8,
           runSpacing: 8,
           children: [
+            // 已有的图片（编辑模式）
+            ...List.generate(
+                _existingImageUrls.length, (i) => _buildExistingImageItem(i)),
+            // 新选择的图片
             ...List.generate(_selectedImages.length, (i) => _buildImageItem(i)),
-            if (_selectedImages.length < 9) _buildAddButton(),
+            if (totalImages < 9) _buildAddButton(),
           ],
         ),
       ],
     );
+  }
+
+  Widget _buildExistingImageItem(int index) {
+    return Stack(
+      children: [
+        Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: AppColors.background,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              _existingImageUrls[index],
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const Center(
+                child: Icon(Icons.broken_image, color: AppColors.textHint),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 4,
+          right: 4,
+          child: GestureDetector(
+            onTap: () => _removeExistingImage(index),
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.close, size: 16, color: Colors.white),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _removeExistingImage(int index) {
+    setState(() {
+      _existingImageUrls.removeAt(index);
+    });
   }
 
   Widget _buildImageItem(int index) {
@@ -240,7 +316,10 @@ class _PublishPageState extends State<PublishPage> {
 
   Future<void> _pickImages() async {
     final picker = ImagePicker();
-    final maxCount = 9 - _selectedImages.length;
+    final totalImages = _existingImageUrls.length + _selectedImages.length;
+    final maxCount = 9 - totalImages;
+
+    if (maxCount <= 0) return;
 
     try {
       final images = await picker.pickMultiImage(
@@ -250,7 +329,8 @@ class _PublishPageState extends State<PublishPage> {
 
       if (images.isNotEmpty) {
         for (final image in images) {
-          if (_selectedImages.length >= 9) break;
+          final total = _existingImageUrls.length + _selectedImages.length;
+          if (total >= 9) break;
           _selectedImages.add(image);
           final bytes = await image.readAsBytes();
           _imageBytes.add(bytes);
@@ -285,7 +365,8 @@ class _PublishPageState extends State<PublishPage> {
   }
 
   Future<void> _publish() async {
-    if (_selectedImages.isEmpty) {
+    final totalImages = _existingImageUrls.length + _selectedImages.length;
+    if (totalImages == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('请至少选择一张图片')),
       );
@@ -293,13 +374,15 @@ class _PublishPageState extends State<PublishPage> {
     }
 
     setState(() => _isPublishing = true);
-    Loading.show(message: '正在上传图片...');
+    Loading.show(message: _isEditMode ? '正在保存...' : '正在上传图片...');
 
     try {
-      // 1. 上传图片
-      final imgUris = <String>[];
+      // 1. 上传新图片
+      final imgUris = <String>[..._existingImageUrls];
       for (int i = 0; i < _selectedImages.length; i++) {
-        Loading.show(message: '正在上传图片 ${i + 1}/${_selectedImages.length}...');
+        Loading.show(
+            message:
+                '正在上传图片 ${_existingImageUrls.length + i + 1}/$totalImages...');
         final url = await OssApi.uploadFileBytes(
           _imageBytes[i],
           _selectedImages[i].name,
@@ -313,38 +396,59 @@ class _PublishPageState extends State<PublishPage> {
         throw Exception('图片上传失败');
       }
 
-      // 2. 发布笔记
-      Loading.show(message: '正在发布...');
-      await NoteApi.publish(
-        type: 0,
-        imgUris: imgUris,
-        title: _titleController.text.trim().isEmpty
-            ? null
-            : _titleController.text.trim(),
-        content: _contentController.text.trim().isEmpty
-            ? null
-            : _contentController.text.trim(),
-        topicId: _selectedTopic?.id,
-      );
+      // 2. 发布或更新笔记
+      Loading.show(message: _isEditMode ? '正在保存...' : '正在发布...');
 
-      // 发布成功
+      if (_isEditMode) {
+        await NoteApi.update(
+          id: widget.editNote!.id,
+          type: 0,
+          imgUris: imgUris,
+          title: _titleController.text.trim().isEmpty
+              ? null
+              : _titleController.text.trim(),
+          content: _contentController.text.trim().isEmpty
+              ? null
+              : _contentController.text.trim(),
+          topicId: _selectedTopic?.id,
+        );
+      } else {
+        await NoteApi.publish(
+          type: 0,
+          imgUris: imgUris,
+          title: _titleController.text.trim().isEmpty
+              ? null
+              : _titleController.text.trim(),
+          content: _contentController.text.trim().isEmpty
+              ? null
+              : _contentController.text.trim(),
+          topicId: _selectedTopic?.id,
+        );
+      }
+
+      // 成功
       Loading.hide();
       // 触发列表刷新
       AppStore.to.refreshNoteList();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('发布成功'), duration: Duration(seconds: 1)),
+          SnackBar(
+              content: Text(_isEditMode ? '保存成功' : '发布成功'),
+              duration: const Duration(seconds: 1)),
         );
-        // 统一使用 go_router 返回主页
-        AppRouter.goHome();
+        if (_isEditMode) {
+          AppRouter.back();
+        } else {
+          AppRouter.goHome();
+        }
       }
     } catch (e) {
       Loading.hide();
       if (mounted) {
         setState(() => _isPublishing = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('发布失败: $e')),
+          SnackBar(content: Text(_isEditMode ? '保存失败: $e' : '发布失败: $e')),
         );
       }
     }
