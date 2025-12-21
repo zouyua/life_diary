@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:frame/api/http.dart';
 import 'package:frame/api/api.dart';
@@ -10,25 +10,27 @@ class UserApi {
   /// 修改用户信息
   static Future<void> updateUserInfo({
     required int userId,
-    File? avatar,
+    Uint8List? avatarBytes,
+    String? avatarName,
     String? nickname,
     String? xiaohashuId,
     int? sex,
     String? birthday,
     String? introduction,
-    File? backgroundImg,
+    Uint8List? backgroundBytes,
+    String? backgroundName,
   }) async {
     final formData = FormData.fromMap({
       'userId': userId,
-      if (avatar != null)
-        'avatar': await MultipartFile.fromFile(avatar.path),
+      if (avatarBytes != null)
+        'avatar': MultipartFile.fromBytes(avatarBytes, filename: avatarName ?? 'avatar.jpg'),
       if (nickname != null) 'nickname': nickname,
       if (xiaohashuId != null) 'xiaohashuId': xiaohashuId,
       if (sex != null) 'sex': sex,
       if (birthday != null) 'birthday': birthday,
       if (introduction != null) 'introduction': introduction,
-      if (backgroundImg != null)
-        'backgroundImg': await MultipartFile.fromFile(backgroundImg.path),
+      if (backgroundBytes != null)
+        'backgroundImg': MultipartFile.fromBytes(backgroundBytes, filename: backgroundName ?? 'bg.jpg'),
     });
 
     final data = await Http.post<Map<String, dynamic>>(

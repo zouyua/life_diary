@@ -70,6 +70,7 @@ class NoteDetailModel {
   final int? likeTotal; // 点赞数
   final int? collectTotal; // 收藏数
   final int? commentTotal; // 评论数
+  final bool? isFollowed; // 当前登录用户是否已关注笔记作者
 
   NoteDetailModel({
     required this.id,
@@ -89,6 +90,7 @@ class NoteDetailModel {
     this.likeTotal,
     this.collectTotal,
     this.commentTotal,
+    this.isFollowed,
   });
 
   factory NoteDetailModel.fromJson(Map<String, dynamic> json) => NoteDetailModel(
@@ -109,6 +111,7 @@ class NoteDetailModel {
         likeTotal: json['likeTotal'] as int?,
         collectTotal: json['collectTotal'] as int?,
         commentTotal: json['commentTotal'] as int?,
+        isFollowed: json['isFollowed'] as bool?,
       );
 
   bool get isVideo => type == 1;

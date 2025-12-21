@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage>
           _tabController!.addListener(_onTabChanged);
         });
         // 加载默认频道的笔记
-        _loadNotes();
+        await _loadNotes();
       }
     } catch (e) {
       if (mounted) {
@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage>
           _channels = [ChannelModel(id: 0, name: '全部')];
           _tabController = TabController(length: 1, vsync: this);
         });
-        _loadNotes();
+        await _loadNotes();
       }
     }
   }

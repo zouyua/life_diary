@@ -83,11 +83,18 @@ class PageResponse<T> {
     Map<String, dynamic> json,
     T Function(dynamic) fromJson,
   ) {
+    // 兼容 data 和 list 两种字段名
+    final dataList = json['data'] ?? json['list'];
+    final list = (dataList as List?)?.map((e) => fromJson(e)).toList() ?? [];
+    final total = json['total'] as int? ?? json['totalCount'] as int? ?? 0;
+    final page = json['pageNo'] as int? ?? json['page'] as int? ?? 1;
+    final pageSize = json['pageSize'] as int? ?? 10;
+    
     return PageResponse<T>(
-      list: (json['list'] as List?)?.map((e) => fromJson(e)).toList() ?? [],
-      total: json['total'] as int? ?? 0,
-      page: json['page'] as int? ?? 1,
-      pageSize: json['pageSize'] as int? ?? 10,
+      list: list,
+      total: total,
+      page: page,
+      pageSize: pageSize,
     );
   }
 }

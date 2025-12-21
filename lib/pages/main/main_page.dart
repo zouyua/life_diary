@@ -17,13 +17,22 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomePage(),
-    SearchPage(),
-    SizedBox(), // 占位，发布按钮跳转独立页面
-    MessagePage(),
-    ProfilePage(),
-  ];
+  // 使用 GlobalKey 来访问子页面的状态
+  final GlobalKey<ProfilePageState> _profileKey = GlobalKey<ProfilePageState>();
+
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const HomePage(),
+      const SearchPage(),
+      const SizedBox(), // 占位，发布按钮跳转独立页面
+      const MessagePage(),
+      ProfilePage(key: _profileKey),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +97,12 @@ class _MainPageState extends State<MainPage> {
       AppRouter.goPublish();
       return;
     }
+    
+    // 切换到"我的"页面时，刷新数据
+    if (index == 4 && _currentIndex != 4) {
+      _profileKey.currentState?.refreshData();
+    }
+    
     setState(() => _currentIndex = index);
   }
 }

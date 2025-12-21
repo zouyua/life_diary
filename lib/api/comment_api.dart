@@ -23,7 +23,7 @@ class CommentApi {
     );
     final response = ApiResponse.fromJson(data ?? {}, null);
     if (!response.success) {
-      throw ApiException(message: response.message);
+      throw ApiException(message: response.message ?? '发布评论失败');
     }
   }
 
@@ -65,7 +65,7 @@ class CommentApi {
     );
     final response = ApiResponse.fromJson(data ?? {}, null);
     if (!response.success) {
-      throw ApiException(message: response.message);
+      throw ApiException(message: response.message ?? '点赞失败');
     }
   }
 
@@ -77,7 +77,7 @@ class CommentApi {
     );
     final response = ApiResponse.fromJson(data ?? {}, null);
     if (!response.success) {
-      throw ApiException(message: response.message);
+      throw ApiException(message: response.message ?? '取消点赞失败');
     }
   }
 
@@ -89,7 +89,7 @@ class CommentApi {
     );
     final response = ApiResponse.fromJson(data ?? {}, null);
     if (!response.success) {
-      throw ApiException(message: response.message);
+      throw ApiException(message: response.message ?? '删除评论失败');
     }
   }
 }

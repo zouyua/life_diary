@@ -46,6 +46,7 @@ class UserProfileModel {
   final String? xiaohashuId;
   final int? sex;
   final int? age;
+  final String? birthday;
   final String? introduction;
   final String? backgroundImg;
   final String? followingTotal;
@@ -54,6 +55,7 @@ class UserProfileModel {
   final String? noteTotal;
   final String? likeTotal;
   final String? collectTotal;
+  final bool? isFollowed; // 当前登录用户是否已关注该用户
 
   // 兼容旧代码
   int get userId => int.tryParse(odUserId) ?? 0;
@@ -65,6 +67,7 @@ class UserProfileModel {
     this.xiaohashuId,
     this.sex,
     this.age,
+    this.birthday,
     this.introduction,
     this.backgroundImg,
     this.followingTotal,
@@ -73,6 +76,7 @@ class UserProfileModel {
     this.noteTotal,
     this.likeTotal,
     this.collectTotal,
+    this.isFollowed,
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) =>
@@ -83,6 +87,7 @@ class UserProfileModel {
         xiaohashuId: json['xiaohashuId'] as String?,
         sex: json['sex'] as int?,
         age: json['age'] as int?,
+        birthday: json['birthday'] as String?,
         introduction: json['introduction'] as String?,
         backgroundImg: json['backgroundImg'] as String?,
         followingTotal: json['followingTotal'] as String?,
@@ -91,6 +96,7 @@ class UserProfileModel {
         noteTotal: json['noteTotal'] as String?,
         likeTotal: json['likeTotal'] as String?,
         collectTotal: json['collectTotal'] as String?,
+        isFollowed: json['isFollowed'] as bool?,
       );
 }
 
@@ -100,12 +106,14 @@ class FollowingUserModel {
   final String? avatar;
   final String? nickname;
   final String? introduction;
+  final bool? isFollowed; // 当前登录用户是否已关注该用户
 
   FollowingUserModel({
     required this.userId,
     this.avatar,
     this.nickname,
     this.introduction,
+    this.isFollowed,
   });
 
   factory FollowingUserModel.fromJson(Map<String, dynamic> json) =>
@@ -114,6 +122,7 @@ class FollowingUserModel {
         avatar: json['avatar'] as String?,
         nickname: json['nickname'] as String?,
         introduction: json['introduction'] as String?,
+        isFollowed: json['isFollowed'] as bool?,
       );
 }
 
@@ -124,6 +133,7 @@ class FansUserModel {
   final String? nickname;
   final int? fansTotal;
   final int? noteTotal;
+  final bool? isFollowed; // 当前登录用户是否已关注该用户
 
   FansUserModel({
     required this.userId,
@@ -131,6 +141,7 @@ class FansUserModel {
     this.nickname,
     this.fansTotal,
     this.noteTotal,
+    this.isFollowed,
   });
 
   factory FansUserModel.fromJson(Map<String, dynamic> json) => FansUserModel(
@@ -139,5 +150,6 @@ class FansUserModel {
         nickname: json['nickname'] as String?,
         fansTotal: json['fansTotal'] as int?,
         noteTotal: json['noteTotal'] as int?,
+        isFollowed: json['isFollowed'] as bool?,
       );
 }

@@ -13,7 +13,7 @@ class RelationApi {
     );
     final response = ApiResponse.fromJson(data ?? {}, null);
     if (!response.success) {
-      throw ApiException(message: response.message);
+      throw ApiException(message: response.message ?? '关注失败');
     }
   }
 
@@ -25,7 +25,7 @@ class RelationApi {
     );
     final response = ApiResponse.fromJson(data ?? {}, null);
     if (!response.success) {
-      throw ApiException(message: response.message);
+      throw ApiException(message: response.message ?? '取消关注失败');
     }
   }
 
