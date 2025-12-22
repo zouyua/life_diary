@@ -7,7 +7,7 @@ class CommentModel {
   final String? content;
   final String? imageUrl;
   final String? createTime;
-  final int? likeTotal;
+  int? likeTotal; // 改为可变，支持点赞计数更新
   final double? heat;
   final int? childCommentTotal;
   final ChildCommentModel? firstReplyComment;
@@ -57,7 +57,7 @@ class ChildCommentModel {
   final String? content;
   final String? imageUrl;
   final String? createTime;
-  final int? likeTotal;
+  int? likeTotal; // 改为可变，支持点赞计数更新
   final String? replyUserName;
   final int? replyUserId;
   bool isLiked;

@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:get/get.dart';
 import 'package:frame/theme/theme.dart';
 import 'package:frame/store/app_store.dart';
 import 'package:frame/api/auth_api.dart';
 import 'package:frame/api/user_api.dart';
 import 'package:frame/api/note_api.dart';
 import 'package:frame/models/user.dart';
-import 'package:frame/models/note.dart';
 import 'package:frame/components/loading.dart';
-import 'package:frame/components/note_card.dart';
+import 'package:frame/components/note_grid.dart';
 import 'package:frame/router/router.dart';
 
 /// 个人主页
@@ -24,27 +21,23 @@ class ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   UserProfileModel? _profile;
-  List<NoteItemModel> _notes = [];
   bool _isLoading = true;
-  bool _isLoadingNotes = false;
-  Worker? _refreshWorker;
+
+  // 三个 Tab 的 Key，用于刷新
+  final _publishedKey = GlobalKey<NoteGridState>();
+  final _collectedKey = GlobalKey<NoteGridState>();
+  final _likedKey = GlobalKey<NoteGridState>();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _loadData();
-
-    // 监听笔记列表刷新信号
-    _refreshWorker = ever(AppStore.to.noteListRefresh, (_) {
-      _loadNotes();
-    });
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _refreshWorker?.dispose();
     super.dispose();
   }
 
@@ -54,12 +47,31 @@ class ProfilePageState extends State<ProfilePage>
   }
 
   Future<void> _loadData() async {
-    // 先加载用户信息
     await _loadUserProfile();
-    // 再加载笔记列表
-    if (_profile?.userId != null) {
-      await _loadNotes();
+    // 刷新当前 Tab 的笔记列表
+    _refreshCurrentTab();
+  }
+  
+  /// 刷新当前选中的 Tab
+  void _refreshCurrentTab() {
+    switch (_tabController.index) {
+      case 0:
+        _publishedKey.currentState?.refresh();
+        break;
+      case 1:
+        _collectedKey.currentState?.refresh();
+        break;
+      case 2:
+        _likedKey.currentState?.refresh();
+        break;
     }
+  }
+  
+  /// 刷新所有 Tab
+  void refreshAllTabs() {
+    _publishedKey.currentState?.refresh();
+    _collectedKey.currentState?.refresh();
+    _likedKey.currentState?.refresh();
   }
 
   Future<void> _loadUserProfile() async {
@@ -74,25 +86,6 @@ class ProfilePageState extends State<ProfilePage>
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  Future<void> _loadNotes() async {
-    if (_profile?.userId == null) return;
-
-    setState(() => _isLoadingNotes = true);
-    try {
-      final response = await NoteApi.getPublishedList(userId: _profile!.userId);
-      if (mounted) {
-        setState(() {
-          _notes = response?.notes ?? [];
-          _isLoadingNotes = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoadingNotes = false);
       }
     }
   }
@@ -261,6 +254,10 @@ class ProfilePageState extends State<ProfilePage>
   }
 
   Widget _buildTabs() {
+    if (_profile == null) return const SliverToBoxAdapter(child: SizedBox.shrink());
+    
+    final userId = _profile!.userId;
+    
     return SliverToBoxAdapter(
       child: Column(
         children: [
@@ -280,51 +277,24 @@ class ProfilePageState extends State<ProfilePage>
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildNotesGrid(),
-                _buildEmptyState('还没有收藏'),
-                _buildEmptyState('还没有赞过'),
+                NoteGrid(
+                  key: _publishedKey,
+                  loader: ({cursor}) => NoteApi.getPublishedList(userId: userId, cursor: cursor),
+                  emptyText: '还没有笔记',
+                ),
+                NoteGrid(
+                  key: _collectedKey,
+                  loader: ({cursor}) => NoteApi.getCollectedList(userId: userId, cursor: cursor),
+                  emptyText: '还没有收藏',
+                ),
+                NoteGrid(
+                  key: _likedKey,
+                  loader: ({cursor}) => NoteApi.getLikedList(userId: userId, cursor: cursor),
+                  emptyText: '还没有赞过',
+                ),
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNotesGrid() {
-    if (_isLoadingNotes) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_notes.isEmpty) {
-      return _buildEmptyState('还没有笔记');
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: MasonryGridView.count(
-        crossAxisCount: 2,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        itemCount: _notes.length,
-        itemBuilder: (context, index) {
-          return NoteCard(
-            note: _notes[index],
-            onTap: () => AppRouter.goNoteDetail(_notes[index].noteId),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(String text) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.note_outlined, size: 48, color: AppColors.textHint),
-          const SizedBox(height: 8),
-          Text(text, style: AppTextStyles.hint),
         ],
       ),
     );

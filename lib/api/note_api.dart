@@ -192,6 +192,44 @@ class NoteApi {
     return response.data;
   }
 
+  /// 获取用户点赞过的笔记列表（游标分页）
+  static Future<NoteListResponse?> getLikedList({
+    required int userId,
+    int? cursor,
+  }) async {
+    final data = await Http.post<Map<String, dynamic>>(
+      '/note/note/liked/list',
+      data: {
+        'userId': userId,
+        if (cursor != null) 'cursor': cursor,
+      },
+    );
+    final response = ApiResponse<NoteListResponse>.fromJson(
+      data ?? {},
+      (d) => NoteListResponse.fromJson(d as Map<String, dynamic>),
+    );
+    return response.data;
+  }
+
+  /// 获取用户收藏的笔记列表（游标分页）
+  static Future<NoteListResponse?> getCollectedList({
+    required int userId,
+    int? cursor,
+  }) async {
+    final data = await Http.post<Map<String, dynamic>>(
+      '/note/note/collected/list',
+      data: {
+        'userId': userId,
+        if (cursor != null) 'cursor': cursor,
+      },
+    );
+    final response = ApiResponse<NoteListResponse>.fromJson(
+      data ?? {},
+      (d) => NoteListResponse.fromJson(d as Map<String, dynamic>),
+    );
+    return response.data;
+  }
+
   /// 获取频道列表
   static Future<List<ChannelModel>> getChannelList() async {
     final data = await Http.post<Map<String, dynamic>>(

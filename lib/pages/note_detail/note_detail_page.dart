@@ -565,11 +565,13 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         await CommentApi.unlike(firstReply.commentId);
         setState(() {
           firstReply.isLiked = false;
+          firstReply.likeTotal = (firstReply.likeTotal ?? 1) - 1;
         });
       } else {
         await CommentApi.like(firstReply.commentId);
         setState(() {
           firstReply.isLiked = true;
+          firstReply.likeTotal = (firstReply.likeTotal ?? 0) + 1;
         });
       }
     } catch (e) {
@@ -619,11 +621,13 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         await CommentApi.unlike(comment.commentId);
         setState(() {
           comment.isLiked = false;
+          comment.likeTotal = (comment.likeTotal ?? 1) - 1;
         });
       } else {
         await CommentApi.like(comment.commentId);
         setState(() {
           comment.isLiked = true;
+          comment.likeTotal = (comment.likeTotal ?? 0) + 1;
         });
       }
     } catch (e) {
