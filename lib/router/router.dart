@@ -8,6 +8,7 @@ import 'package:frame/pages/publish/publish_page.dart';
 import 'package:frame/pages/profile/edit_profile_page.dart';
 import 'package:frame/pages/user/user_profile_page.dart';
 import 'package:frame/pages/user/user_list_page.dart';
+import 'package:frame/pages/chat/chat_page.dart';
 import 'package:frame/models/note.dart';
 import 'package:frame/models/user.dart';
 import 'package:frame/components/user_list.dart';
@@ -22,6 +23,7 @@ class Routes {
   static const String editProfile = '/profile/edit';
   static const String followingList = '/following/:userId';
   static const String fansList = '/fans/:userId';
+  static const String chat = '/chat';
 }
 
 /// 应用路由配置
@@ -88,6 +90,19 @@ class AppRouter {
         builder: (context, state) {
           final userId = int.tryParse(state.pathParameters['userId'] ?? '') ?? 0;
           return UserProfilePage(userId: userId);
+        },
+      ),
+      GoRoute(
+        path: Routes.chat,
+        name: 'chat',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return ChatPage(
+            conversationId: extra['conversationId'] as String?,
+            targetUserId: extra['targetUserId'] as int? ?? 0,
+            targetUserNickname: extra['targetUserNickname'] as String?,
+            targetUserAvatar: extra['targetUserAvatar'] as String?,
+          );
         },
       ),
     ],
@@ -179,5 +194,20 @@ class AppRouter {
   /// 跳转到粉丝列表
   static void goFansList(int userId) {
     router.push('/fans/$userId');
+  }
+
+  /// 跳转到聊天页面
+  static Future<void> goChat({
+    String? conversationId,
+    required int targetUserId,
+    String? targetUserNickname,
+    String? targetUserAvatar,
+  }) {
+    return router.push(Routes.chat, extra: {
+      'conversationId': conversationId,
+      'targetUserId': targetUserId,
+      'targetUserNickname': targetUserNickname,
+      'targetUserAvatar': targetUserAvatar,
+    });
   }
 }

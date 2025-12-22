@@ -108,6 +108,22 @@ class _UserProfilePageState extends State<UserProfilePage>
       backgroundColor: const Color(0xFFFFE4E1),
       foregroundColor: Colors.black,
       title: Text(_profile?.nickname ?? '用户主页'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.chat_outlined),
+          onPressed: _openChat,
+          tooltip: '发消息',
+        ),
+      ],
+    );
+  }
+
+  /// 打开聊天页面
+  void _openChat() {
+    AppRouter.goChat(
+      targetUserId: widget.userId,
+      targetUserNickname: _profile?.nickname,
+      targetUserAvatar: _profile?.avatar,
     );
   }
 
@@ -157,15 +173,29 @@ class _UserProfilePageState extends State<UserProfilePage>
                     ],
                   ),
                 ),
-                // 右边：关注按钮
-                OutlinedButton(
-                  onPressed: _toggleFollow,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    backgroundColor: _isFollowed ? AppColors.primary : null,
-                    foregroundColor: _isFollowed ? Colors.white : null,
-                  ),
-                  child: Text(_isFollowed ? '已关注' : '关注'),
+                // 右边：关注按钮和聊天按钮
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    OutlinedButton(
+                      onPressed: _openChat,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        side: BorderSide(color: AppColors.primary),
+                      ),
+                      child: const Text('发消息'),
+                    ),
+                    const SizedBox(width: 8),
+                    OutlinedButton(
+                      onPressed: _toggleFollow,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        backgroundColor: _isFollowed ? AppColors.primary : null,
+                        foregroundColor: _isFollowed ? Colors.white : null,
+                      ),
+                      child: Text(_isFollowed ? '已关注' : '关注'),
+                    ),
+                  ],
                 ),
               ],
             ),
