@@ -20,9 +20,12 @@ class EnvConfig {
   static String get apiBaseUrl {
     switch (_current) {
       case Env.dev:
-        return 'http://10.0.2.2:8000';
+        // 本地开发：Android 模拟器用 10.0.2.2，Web/iOS 模拟器用 localhost
+        return 'http://121.43.242.58:8000';
+        // return 'http://10.0.2.2';
       case Env.prod:
-        return 'https://api.example.com';
+        // 生产环境：通过 Nginx 反向代理，/api 转发到 Gateway
+        return 'http://121.43.242.58/api';
     }
   }
 
@@ -30,9 +33,9 @@ class EnvConfig {
   static String get appName {
     switch (_current) {
       case Env.dev:
-        return 'Frame Dev';
+        return '生活手贴 Dev';
       case Env.prod:
-        return 'Frame';
+        return '生活手贴';
     }
   }
 

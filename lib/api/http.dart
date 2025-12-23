@@ -3,6 +3,7 @@ import 'package:frame/config/env.dart';
 import 'package:frame/utils/logger.dart';
 import 'package:frame/utils/storage.dart';
 import 'package:frame/api/api.dart';
+import 'package:frame/store/app_store.dart';
 
 /// HTTP 请求封装
 class Http {
@@ -187,7 +188,15 @@ class _LogInterceptor extends Interceptor {
 class _AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final token = Storage.getString(StorageKeys.token);
+    // 优先从 AppStore 读取 token（内存中同步更新）
+    // 如果 AppStore 还没初始化，则从 Storage 读取
+    String? token;
+    try {
+      token = AppStore.to.token;
+    } catch (_) {
+      token = Storage.getString(StorageKeys.token);
+    }
+    
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }

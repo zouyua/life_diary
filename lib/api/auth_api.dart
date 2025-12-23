@@ -5,12 +5,16 @@ import 'package:frame/api/api.dart';
 /// Gateway 路由: /auth/** -> xiaohashu-auth
 class AuthApi {
   /// 发送短信验证码
-  static Future<ApiResponse> sendVerificationCode(String phone) async {
+  /// 返回 ApiResponse，data 字段包含验证码（测试环境）
+  static Future<ApiResponse<String?>> sendVerificationCode(String phone) async {
     final data = await Http.post<Map<String, dynamic>>(
       '/auth/verification/code/send',
       data: {'phone': phone},
     );
-    return ApiResponse.fromJson(data ?? {}, null);
+    return ApiResponse<String?>.fromJson(
+      data ?? {},
+      (d) => d?.toString(),
+    );
   }
 
   /// 用户登录/注册

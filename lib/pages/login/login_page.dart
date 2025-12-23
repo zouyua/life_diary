@@ -210,7 +210,13 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final response = await AuthApi.sendVerificationCode(phone);
       if (response.success) {
-        _showSnackBar('验证码已发送');
+        // 如果返回了验证码（测试环境），自动填入
+        if (response.data != null && response.data!.isNotEmpty) {
+          _codeController.text = response.data!;
+          _showSnackBar('验证码已自动填入: ${response.data}');
+        } else {
+          _showSnackBar('验证码已发送');
+        }
         _startCountdown();
       } else {
         _showSnackBar(response.message ?? '发送失败');

@@ -107,27 +107,50 @@ class NoteCard extends StatelessWidget {
     );
   }
 
+  /// 视频占位图
+  Widget _buildVideoPlaceholder() {
+    return Container(
+      height: 150,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.grey[800]!, Colors.grey[900]!],
+        ),
+      ),
+      child: const Center(
+        child: Icon(
+          Icons.play_circle_outline,
+          size: 48,
+          color: Colors.white70,
+        ),
+      ),
+    );
+  }
+
   /// 构建封面内容
   Widget _buildCoverContent() {
     // 有 cover 图片，直接显示
-    if (note.cover != null) {
+    if (note.cover != null && note.cover!.isNotEmpty) {
       return CachedNetworkImage(
         imageUrl: note.cover!,
         fit: BoxFit.cover,
         width: double.infinity,
-        placeholder: (_, _) => _buildPlaceholder(),
-        errorWidget: (_, _, _) => _buildPlaceholder(),
+        placeholder: (_, _) =>
+            note.isVideo ? _buildVideoPlaceholder() : _buildPlaceholder(),
+        errorWidget: (_, _, _) =>
+            note.isVideo ? _buildVideoPlaceholder() : _buildPlaceholder(),
       );
     }
-    
-    // 视频类型且有 videoUri，显示视频第一帧
+
+    // 视频类型且有 videoUri，尝试加载视频第一帧
     if (note.isVideo && note.videoUri != null) {
       return VideoThumbnail(
         videoUrl: note.videoUri!,
         height: 150,
       );
     }
-    
+
     // 默认占位图
     return _buildPlaceholder();
   }

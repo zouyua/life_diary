@@ -66,19 +66,21 @@ class _VideoThumbnailState extends State<VideoThumbnail> {
       return _buildLoading();
     }
 
-    // 使用 AspectRatio 和 ClipRect 避免绿线问题
-    return SizedBox(
-      height: widget.height,
-      width: double.infinity,
-      child: ClipRect(
-        child: OverflowBox(
-          alignment: Alignment.center,
-          child: FittedBox(
-            fit: widget.fit,
-            child: SizedBox(
-              width: _controller!.value.size.width,
-              height: _controller!.value.size.height,
-              child: VideoPlayer(_controller!),
+    // 使用 IgnorePointer 让点击事件穿透到父级
+    return IgnorePointer(
+      child: SizedBox(
+        height: widget.height,
+        width: double.infinity,
+        child: ClipRect(
+          child: OverflowBox(
+            alignment: Alignment.center,
+            child: FittedBox(
+              fit: widget.fit,
+              child: SizedBox(
+                width: _controller!.value.size.width,
+                height: _controller!.value.size.height,
+                child: VideoPlayer(_controller!),
+              ),
             ),
           ),
         ),
