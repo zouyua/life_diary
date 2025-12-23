@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:frame/models/note.dart';
 import 'package:frame/theme/theme.dart';
+import 'package:frame/components/video_thumbnail.dart';
 
 /// 笔记卡片组件（瀑布流）
 class NoteCard extends StatelessWidget {
   final NoteItemModel note;
   final VoidCallback? onTap;
+  final bool showTopBadge; // 是否显示置顶标签
 
   const NoteCard({
     super.key,
     required this.note,
     this.onTap,
+    this.showTopBadge = true,
   });
 
   @override
@@ -47,18 +50,10 @@ class NoteCard extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-          child: note.cover != null
-              ? CachedNetworkImage(
-                  imageUrl: note.cover!,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  placeholder: (_, _) => _buildPlaceholder(),
-                  errorWidget: (_, _, _) => _buildPlaceholder(),
-                )
-              : _buildPlaceholder(),
+          child: _buildCoverContent(),
         ),
         // 置顶标签
-        if (note.isTop == true)
+        if (showTopBadge && note.isTop == true)
           Positioned(
             top: 8,
             left: 8,
@@ -110,6 +105,31 @@ class NoteCard extends StatelessWidget {
         child: Icon(Icons.image, size: 40, color: AppColors.textHint),
       ),
     );
+  }
+
+  /// 构建封面内容
+  Widget _buildCoverContent() {
+    // 有 cover 图片，直接显示
+    if (note.cover != null) {
+      return CachedNetworkImage(
+        imageUrl: note.cover!,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        placeholder: (_, _) => _buildPlaceholder(),
+        errorWidget: (_, _, _) => _buildPlaceholder(),
+      );
+    }
+    
+    // 视频类型且有 videoUri，显示视频第一帧
+    if (note.isVideo && note.videoUri != null) {
+      return VideoThumbnail(
+        videoUrl: note.videoUri!,
+        height: 150,
+      );
+    }
+    
+    // 默认占位图
+    return _buildPlaceholder();
   }
 
   Widget _buildDefaultAvatar() {

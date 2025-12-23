@@ -13,12 +13,14 @@ class NoteGrid extends StatefulWidget {
   final NoteListLoader loader;
   final String emptyText;
   final VoidCallback? onRefresh;
+  final bool showTopBadge; // 是否显示置顶标签
 
   const NoteGrid({
     super.key,
     required this.loader,
     this.emptyText = '暂无笔记',
     this.onRefresh,
+    this.showTopBadge = true,
   });
 
   @override
@@ -128,6 +130,7 @@ class NoteGridState extends State<NoteGrid> with AutomaticKeepAliveClientMixin {
             return NoteCard(
               note: _notes[index],
               onTap: () => AppRouter.goNoteDetail(_notes[index].noteId),
+              showTopBadge: widget.showTopBadge,
             );
           },
         ),

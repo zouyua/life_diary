@@ -40,11 +40,17 @@ dependencies:
   
   # 缓存图片
   cached_network_image: ^3.3.1
+  
+  # 视频播放
+  video_player: ^2.8.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  
+  # 应用图标生成
+  flutter_launcher_icons: ^0.14.3
   
   # JSON 序列化代码生成
   build_runner: ^2.4.13
@@ -62,3 +68,11 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+
+# 应用图标配置
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
+  adaptive_icon_background: "#FF6B6B"
+  adaptive_icon_foreground: "assets/icons/app_icon_foreground.png"

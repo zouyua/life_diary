@@ -157,7 +157,7 @@ class ProfilePageState extends State<ProfilePage>
                       Text(_profile?.nickname ?? '用户', style: AppTextStyles.h2),
                       const SizedBox(height: 8),
                       Text(
-                        '小哈书号: ${_profile?.xiaohashuId ?? '未设置'}',
+                        '生活手贴号: ${_profile?.xiaohashuId ?? '未设置'}',
                         style: AppTextStyles.caption,
                       ),
                     ],
@@ -281,16 +281,19 @@ class ProfilePageState extends State<ProfilePage>
                   key: _publishedKey,
                   loader: ({cursor}) => NoteApi.getPublishedList(userId: userId, cursor: cursor),
                   emptyText: '还没有笔记',
+                  showTopBadge: true, // 自己发布的笔记显示置顶
                 ),
                 NoteGrid(
                   key: _collectedKey,
                   loader: ({cursor}) => NoteApi.getCollectedList(userId: userId, cursor: cursor),
                   emptyText: '还没有收藏',
+                  showTopBadge: false, // 收藏的笔记不显示置顶
                 ),
                 NoteGrid(
                   key: _likedKey,
                   loader: ({cursor}) => NoteApi.getLikedList(userId: userId, cursor: cursor),
                   emptyText: '还没有赞过',
+                  showTopBadge: false, // 点赞的笔记不显示置顶
                 ),
               ],
             ),
@@ -455,6 +458,14 @@ class ProfilePageState extends State<ProfilePage>
                 },
               ),
               ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: const Text('关于'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showAboutPage();
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.logout, color: Colors.red),
                 title: const Text('退出登录', style: TextStyle(color: Colors.red)),
                 onTap: () {
@@ -466,6 +477,125 @@ class ProfilePageState extends State<ProfilePage>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  /// 显示关于页面
+  void _showAboutPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AboutPage()),
+    );
+  }
+}
+
+/// 关于页面
+class AboutPage extends StatelessWidget {
+  const AboutPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('关于'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            const SizedBox(height: 40),
+            // 应用图标
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.auto_stories,
+                size: 50,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 24),
+            // 应用名称
+            Text('生活手贴', style: AppTextStyles.h1),
+            const SizedBox(height: 8),
+            Text('v1.0.0', style: AppTextStyles.caption),
+            const SizedBox(height: 40),
+            // 项目介绍
+            _buildSection(
+              title: '项目介绍',
+              content: '生活手贴是一款仿小红书的社交分享平台，用户可以发布图文/视频笔记，'
+                  '进行点赞、收藏、评论、关注、聊天等社交互动。\n\n'
+                  '本项目采用前后端分离架构，前端使用 Flutter 跨平台框架开发，'
+                  '后端采用 Spring Cloud 微服务架构，支持高并发，如果需要源代码联系本人',
+            ),
+            const SizedBox(height: 24),
+            // 技术栈
+            _buildSection(
+              title: '技术栈',
+              content: '前端：Flutter + GetX + Dio + go_router\n'
+                  '后端：Spring Cloud Alibaba + Nacos + Gateway + SaToken + MySQL + Redis + RocketMQ + Cassandra + Caffeine',
+            ),
+            const SizedBox(height: 24),
+            // 作者信息
+            _buildSection(
+              title: '作者信息',
+              content: '作者：zouyua\n'
+                  'Gitee：https://gitee.com/zouyua\n'
+                  'GitHub：https://github.com/zouyua',
+            ),
+            const SizedBox(height: 40),
+            // 版权信息
+            Text(
+              '© 2025 生活手贴 All Rights Reserved',
+              style: AppTextStyles.caption,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSection({required String title, required String content}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.text,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            content,
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+              height: 1.6,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:frame/store/app_store.dart';
+import 'package:frame/pages/splash/splash_page.dart';
 import 'package:frame/pages/main/main_page.dart';
 import 'package:frame/pages/login/login_page.dart';
 import 'package:frame/pages/note_detail/note_detail_page.dart';
@@ -15,6 +15,7 @@ import 'package:frame/components/user_list.dart';
 
 /// 路由名称
 class Routes {
+  static const String splash = '/splash';
   static const String main = '/';
   static const String login = '/login';
   static const String noteDetail = '/note/detail';
@@ -29,10 +30,13 @@ class Routes {
 /// 应用路由配置
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: Routes.main,
-    redirect: _authGuard,
-    refreshListenable: AppStore.authNotifier,
+    initialLocation: Routes.splash,
     routes: [
+      GoRoute(
+        path: Routes.splash,
+        name: 'splash',
+        builder: (context, state) => const SplashPage(),
+      ),
       GoRoute(
         path: Routes.main,
         name: 'main',
@@ -112,24 +116,6 @@ class AppRouter {
       ),
     ),
   );
-
-  /// 路由守卫
-  static String? _authGuard(BuildContext context, GoRouterState state) {
-    final isLoggedIn = AppStore.to.isLoggedIn;
-    final isLoginPage = state.matchedLocation == Routes.login;
-
-    // 未登录且不在登录页，跳转到登录页
-    if (!isLoggedIn && !isLoginPage) {
-      return Routes.login;
-    }
-
-    // 已登录且在登录页，跳转到主页
-    if (isLoggedIn && isLoginPage) {
-      return Routes.main;
-    }
-
-    return null;
-  }
 
   /// 跳转到指定路由
   static void go(String path) {

@@ -1,17 +1,237 @@
-# frame
+## 需要更新的 README.md 内容
 
-A new Flutter project.
+请将以下内容替换到 `README.md` 文件中：
 
-## Getting Started
+```markdown
+# 生活日记 (Life Diary)
 
-This project is a starting point for a Flutter application.
+一个基于 Flutter 开发的现代化社交日记应用，让用户记录生活、分享心情、与他人互动。
 
-A few resources to get you started if this is your first Flutter project:
+## 📱 功能特性
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+### 🔐 用户系统
+- 手机号注册/登录
+- 用户资料管理
+- 密码修改
+- 个人主页展示
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 📝 日记功能
+- 图文日记发布
+- 视频日记支持
+- 日记编辑与删除
+- 隐私设置（仅自己可见）
+- 日记置顶
+
+### 👥 社交互动
+- 用户关注/取关
+- 日记评论（支持多级回复）
+- 点赞/收藏功能
+- 粉丝/关注列表
+
+### 🔍 搜索发现
+- 用户搜索
+- 日记内容搜索
+- 话题分类浏览
+
+### 🎨 用户体验
+- Material Design 设计风格
+- 深色/浅色主题切换
+- 响应式布局
+- 流畅的动画过渡
+
+## 🛠 技术栈
+
+### 前端框架
+- **Flutter** - 跨平台移动应用框架
+- **Material Design** - Google 设计语言
+
+### 核心依赖
+- `get` - 状态管理和路由
+- `dio` - HTTP 网络请求
+- `shared_preferences` - 本地存储
+- `logger` - 日志记录
+- `image_picker` - 图片选择
+- `cached_network_image` - 网络图片缓存
+
+### 开发工具
+- `flutter_test` - 单元测试
+- `flutter_lints` - 代码规范
+- `mockito` - 测试模拟
+
+## 📁 项目结构
+
+```
+lib/
+├── api/           # API 接口封装
+├── components/    # 通用组件
+├── config/        # 配置文件
+├── models/        # 数据模型
+├── pages/         # 页面
+│   ├── chat/      # 聊天相关
+│   ├── home/      # 首页
+│   ├── login/     # 登录注册
+│   ├── main/      # 主页面
+│   ├── message/   # 消息中心
+│   ├── note_detail/ # 笔记详情
+│   ├── profile/   # 个人资料
+│   ├── publish/   # 发布页面
+│   ├── search/    # 搜索页面
+│   └── user/      # 用户页面
+├── router/        # 路由配置
+├── store/         # 状态管理
+├── theme/         # 主题配置
+├── utils/         # 工具类
+├── app.dart       # 应用入口
+└── main.dart      # 主程序
+```
+
+## 🚀 快速开始
+
+### 环境要求
+- Flutter SDK: >=3.11.0
+- Dart SDK: >=3.0.0
+- Android Studio / VS Code
+
+### 安装步骤
+
+1. **克隆项目**
+```bash
+git clone https://gitee.com/zouyua/life_diary.git
+cd life_diary
+```
+
+2. **安装依赖**
+```bash
+flutter pub get
+```
+
+3. **配置环境**
+- 开发环境：项目默认使用 `dev` 模式
+- API 地址：`http://localhost:8000`（开发环境）
+- 生产环境：修改 `lib/config/env.dart` 中的配置
+
+4. **运行应用**
+```bash
+# 开发模式
+flutter run
+
+# Web 版本
+flutter run -d chrome
+```
+
+## 🔧 开发配置
+
+### 环境变量
+
+```dart
+// lib/config/env.dart
+enum Env { dev, prod }
+
+class EnvConfig {
+  // API 基础地址
+  static String get apiBaseUrl {
+    switch (_current) {
+      case Env.dev:
+        return 'http://localhost:8000';
+      case Env.prod:
+        return 'https://api.example.com';
+    }
+  }
+  
+  // 应用名称
+  static String get appName {
+    switch (_current) {
+      case Env.dev:
+        return 'Frame Dev';
+      case Env.prod:
+        return 'Frame';
+    }
+  }
+}
+```
+
+### 构建发布
+
+```bash
+# Android APK
+flutter build apk --release
+
+# Android App Bundle
+flutter build appbundle --release
+
+# iOS
+flutter build ios --release
+
+# Web
+flutter build web --release
+```
+
+## 📖 API 文档
+
+详细的 API 接口文档请参考：[API接口文档.md](./API接口文档.md)
+
+### 主要接口模块
+- **认证模块**：注册、登录、密码管理
+- **用户模块**：用户信息、关注关系
+- **笔记模块**：发布、编辑、删除、互动
+- **评论模块**：评论发布、回复管理
+- **搜索模块**：用户搜索、笔记搜索
+- **文件模块**：图片/视频上传
+
+## 🧪 测试
+
+```bash
+# 运行所有测试
+flutter test
+
+# 运行特定测试
+flutter test test/widget_test.dart
+
+# 生成测试覆盖率报告
+flutter test --coverage
+```
+
+## 📱 支持平台
+
+- ✅ Android
+- 🚧 iOS（开发中）
+- ✅ Web
+- 🚧 macOS（开发中）
+- 🚧 Windows（开发中）
+- 🚧 Linux（开发中）
+
+## 🤝 贡献指南
+
+1. Fork 本仓库
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 创建 Pull Request
+
+## 📄 许可证
+
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+
+## 📞 联系方式
+
+- 项目维护者：[@zouyua](https://gitee.com/zouyua)
+- 项目地址：[https://gitee.com/zouyua/life_diary](https://gitee.com/zouyua/life_diary)
+
+---
+
+⭐ 如果这个项目对你有帮助，请给它一个 Star！
+```
+
+## 更新原因
+
+当前的 README.md 文件还是默认的 Flutter 模板内容，需要根据项目的实际功能进行完善。新的 README 包含：
+
+1. ✅ 完整的项目介绍和功能特性
+2. ✅ 详细的技术栈和依赖说明  
+3. ✅ 清晰的项目结构图
+4. ✅ 快速开始的步骤指南
+5. ✅ 开发和部署配置说明
+6. ✅ API 文档指引
+7. ✅ 测试和贡献指南
+
+基于项目的实际文件结构和 API 文档编写，内容真实反映项目的功能和架构。

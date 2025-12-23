@@ -10,6 +10,7 @@ import 'package:frame/store/app_store.dart';
 import 'package:frame/router/router.dart';
 import 'package:frame/pages/note_detail/comment_input_sheet.dart';
 import 'package:frame/pages/note_detail/child_comments_sheet.dart';
+import 'package:frame/components/video_player_widget.dart';
 
 /// 笔记详情页
 class NoteDetailPage extends StatefulWidget {
@@ -246,16 +247,17 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
 
   Widget _buildImages() {
     final images = _note?.imgUris ?? [];
+    
+    // 视频类型
+    if (_note?.isVideo == true && _note?.videoUri != null) {
+      return VideoPlayerWidget(
+        videoUrl: _note!.videoUri!,
+        autoPlay: false,
+      );
+    }
+    
+    // 图文类型
     if (images.isEmpty) {
-      if (_note?.videoUri != null) {
-        return Container(
-          height: 300,
-          color: Colors.black,
-          child: const Center(
-            child: Icon(Icons.play_circle_outline, size: 64, color: Colors.white),
-          ),
-        );
-      }
       return const SizedBox.shrink();
     }
 
