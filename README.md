@@ -5,7 +5,7 @@
 一个基于 Flutter 开发的现代化社交日记应用，让用户记录生活、分享心情、与他人互动。
 
 ## 功能演示
-![](https://cdn.img2ipfs.com/ipfs/QmVFuXxaQkChtnN5qqZNjGhTLhRQGQwqHDHFGUP3pYQPSx?filename=display.gif)
+![img](https://cdn.img2ipfs.com/ipfs/QmVFuXxaQkChtnN5qqZNjGhTLhRQGQwqHDHFGUP3pYQPSx?filename=display.gif)
 
 ## 📱 功能特性
 
