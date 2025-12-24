@@ -6,7 +6,7 @@
 
 ## 功能演示
 ![](https://github.com/zouyua/life_diary/blob/master/assets/images/display1.gif)
-
+![0_40.gif](https://free.picui.cn/free/2025/12/24/694b8f23ad901.gif)
 ## 📱 功能特性
 
 ### 🔐 用户系统
