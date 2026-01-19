@@ -2,7 +2,7 @@
 
 # 生活日记 (Life Diary)
 
-一个基于 Flutter 开发的现代化社交日记应用，让用户记录生活、分享心情、与他人互动。
+一个基于 Flutter 开发的现代化社交日记应用，让用户记录生活、分享心情、与他人互动。 在线体验移动端网址：http://120.26.237.67
 
 ## 功能演示
 ![](https://github.com/zouyua/life_diary/blob/master/assets/images/0_40.gif)
